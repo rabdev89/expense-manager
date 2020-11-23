@@ -15,7 +15,6 @@ class UpdateRoleRequest extends FormRequest
     {
         return [
             'display_name' => ['required'],
-            'roles' => ['array']
         ];
     }
 }

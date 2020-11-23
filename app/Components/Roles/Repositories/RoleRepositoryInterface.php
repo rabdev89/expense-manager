@@ -15,7 +15,7 @@ interface RoleRepositoryInterface extends BaseRepositoryInterface
 
     public function findRoleById(int $id);
 
-    public function updateRole(array $data) : bool;
+    public function updateRole(array $data) : Role;
 
     public function deleteRoleById() : bool;
 

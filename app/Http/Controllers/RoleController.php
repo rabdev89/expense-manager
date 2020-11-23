@@ -98,13 +98,13 @@ class RoleController extends Controller
     public function update(UpdateRoleRequest $request, $id)
     {
         $role = $this->roleRepo->findRoleById($id);
+        if ($role) {
+            $data = $request->except('_token', '_method');
+            $data['name'] = str_slug($request->input('display_name'));
+            $data['id'] = $id;
+            $this->roleRepo->updateRole($data);
 
-        if ($request->has('permissions')) {
-            $roleRepo = new RoleRepository($role);
-            $roleRepo->syncPermissions($request->input('permissions'));
+            return response()->json('Update role successful!', 200);
         }
-
-        $this->roleRepo->updateRole($request->except('_method', '_token'), $id);
-        return response()->json('Update role successful!', 200);
     }
 }

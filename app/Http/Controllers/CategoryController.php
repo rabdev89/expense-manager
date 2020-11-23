@@ -63,12 +63,7 @@ class CategoryController extends Controller
     {
         $category = $this->categoryRepo->findCategoryById($id);
 
-        $cat = new CategoryRepository($category);
-
-        return response()->json([
-            'category' => $category,
-            'categories' => $category->children
-        ], 200);
+        return response()->json($category, 200);
     }
 
 

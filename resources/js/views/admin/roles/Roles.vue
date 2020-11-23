@@ -9,7 +9,7 @@
       </ol>
       <div class="page-actions">
 
-        <button class="btn btn-primary" @click="$refs.dark_html_modal.open()">
+        <button class="btn btn-primary" @click="$refs.create_form.open()">
           <i class="icon-fa icon-fa-plus"/> Add New
         </button>
       </div>
@@ -43,6 +43,10 @@
               >
                 <template slot-scope="row">
                   <div class="table__actions">
+                    <a class="btn btn-default btn-sm" @click="showEdit(row)">
+                      <i class="icon-fa icon-fa-search"/> Edit
+                    </a>
+
                     <a
                       class="btn btn-default btn-sm"
                       data-delete
@@ -59,8 +63,57 @@
         </div>
       </div>
     </div>
+
     <sweet-modal
-      ref="dark_html_modal"
+      ref="edit_form"
+      modal-theme="light"
+      overlay-theme="light"
+    >
+      <div class="card">
+      <div class="card-header">
+        <h6>Edit Role</h6>
+      </div>
+      <div class="card-body">
+        <form @submit.prevent="validateEditBeforeSubmit">
+          <div :class="{'form-group' : true}">
+            <label>Display Name </label>
+            <input
+              v-validate
+              v-model="roles.display_name"
+              :class="['form-control', {'is-invalid': errors.has('roles.display_name') }]"
+              data-vv-rules="required"
+              name="roles.display_name"
+              data-vv-as="Name"
+              type="text"
+            >
+            <div v-show="errors.has('roles.display_name')" class="invalid-feedback">
+              {{ errors.first('roles.display_name') }}
+            </div>
+          </div>
+          <div :class="{'form-group' : true}">
+            <label>Description </label>
+            <input
+              v-validate
+              v-model="roles.description"
+              :class="['form-control', {'is-invalid': errors.has('roles.description') }]"
+              data-vv-rules="required"
+              name="roles.description"
+              data-vv-as="Description"
+              type="text"
+            >
+            <div v-show="errors.has('roles.description')" class="invalid-feedback">
+              {{ errors.first('roles.description') }}
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    </sweet-modal>
+
+    <sweet-modal
+      ref="create_form"
       modal-theme="light"
       overlay-theme="light"
     >
@@ -124,13 +177,38 @@ export default {
         name: '',
         description: '',
       },
-      roles: []
+      roles: [],
     }
   },
   install (Vue, options) {
     Vue.component('SweetModal', SweetModal)
   },
   methods: {
+    showEdit: function(data) {
+      const self = this;
+      self.roles = data;
+      this.$refs.edit_form.open();
+    },
+    async validateEditBeforeSubmit () {
+      const dis = this;
+      this.$validator.validateAll().then((result) => {
+        this.params = {
+          display_name: dis.roles.display_name,
+          description: dis.roles.description
+        }
+
+        axios.put(`/api/roles/` + dis.roles.id, this.params).then(function (response) {
+          console.log(response);
+          alert('Form Submitted!')
+          dis.$router.go();
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+          alert('Correct them errors!')
+        })
+      });
+    },
     async validateBeforeSubmit () {
       let self = this;
       this.$validator.validateAll().then((result) => {

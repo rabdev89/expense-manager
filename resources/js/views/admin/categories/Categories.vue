@@ -28,7 +28,7 @@
               table-class="table"
             >
               <table-column show="name" label="Name"/>
-              <table-column show="email" label="Description"/>
+              <table-column show="description" label="Description"/>
               <table-column
                 show="created_at"
                 label="Registered On"
@@ -175,21 +175,23 @@ export default {
         name: '',
         description: ''
       },
-      categories: []
+      categories: {}
     }
   },
   methods: {
-    async showEdit(cat) {
-      $refs.create_form.open();
+    showEdit: function(cat) {
+      const self = this;
+      self.categories = cat;
+      this.$refs.edit_form.open();
     },
     async validateEditBeforeSubmit (cat) {
       let self = this;
       this.$validator.validateAll().then((result) => {
         this.params = {
-          name: categories.name,
-          description: categories.description,
+          name: self.categories.name,
+          description: self.categories.description,
         }
-        axios.put(`/api/categories/` + cat.id, this.params).then(function (response) {
+        axios.put(`/api/categories/` + self.categories.id, this.params).then(function (response) {
           // handle success
           console.log(response);
           alert('Form Submitted!')

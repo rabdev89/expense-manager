@@ -75,10 +75,15 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
      * @return bool
      * @throws UpdateRoleErrorException
      */
-    public function updateRole(array $data) : bool
+    public function updateRole(array $data) : Role
     {
         try {
-            return $this->update($data);
+            //dd($data);
+            $role = $this->findRoleById($data['id']);
+            $collection = collect($data);
+            $role->update($collection->toArray());
+
+            return $role;
         } catch (QueryException $e) {
             throw new UpdateRoleErrorException($e);
         }
